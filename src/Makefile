@@ -1,7 +1,5 @@
 
 ERL_SOURCES = \
-	$(PIQI_ERL_FILES) \
-	piqi_tools.erl \
 	piqi_rpc_runtime.erl \
 	\
 	piqi_rpc.erl \
@@ -17,8 +15,8 @@ ERL_SOURCES = \
 #ERL_TESTS =
 
 
-ERL_APP_PATH = $(PIQI_ROOT)/piqirun-erlang
-ERLC_FLAGS = #-pa $(PIQI_ROOT)/piqirun-erlang #-I $(PIQI_ROOT)/piqirun-erlang
+ERL_APP_PATH = $(PIQI_ROOT)/piqi-erlang
+ERLC_FLAGS = #-pa $(PIQI_ROOT)/piqi-erlang #-I $(PIQI_ROOT)/piqi-erlang
 
 #EBIN_DIR = .
 
@@ -27,13 +25,13 @@ PIQIC = piqic
 PIQIC_FLAGS =
 
 
-PIQI_FILES = piqi-rpc.piqi piqi-tools.piqi
+PIQI_FILES = piqi-rpc.piqi
 
-PIQI_ERL_FILES = piqi_rpc_piqi.erl piqi_tools_piqi.erl
-PIQI_HRL_FILES = piqi_rpc_piqi.hrl piqi_tools_piqi.hrl
+PIQI_ERL_FILES = piqi_rpc_piqi.erl
+PIQI_HRL_FILES = piqi_rpc_piqi.hrl
 
 
-PRE_TARGET = $(PIQI_FILES)
+PRE_TARGET = $(PIQI_FILES) $(PIQI_HRL_FILES)
 
 
 VSN = $(shell cat $(PIQI_ROOT)/VERSION)
@@ -58,7 +56,7 @@ $(PIQI_FILES): %: $(PIQI_ROOT)/piqi-tools/%
 	ln -s $< $@
 
 
-$(PIQI_ERL_FILES): $(PIQI_FILES)
+$(PIQI_ERL_FILES) $(PIQI_HRL_FILES): $(PIQI_FILES)
 	for i in $^; do \
 		$(PIQIC) erlang $(PIQIC_FLAGS) $$i; \
 	done
