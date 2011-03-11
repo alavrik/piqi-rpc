@@ -24,8 +24,11 @@
 -export([init/1]).
 
 
+-define(SUPERVISOR, ?MODULE).
+
+
 start_link() ->
-    supervisor:start_link(?MODULE, []).
+    supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, []).
 
 
 %
@@ -36,7 +39,7 @@ init(_Args) ->
     PiqiRpcMonitor =
         {piqi_rpc_monitor,
             {piqi_rpc_monitor, start_link, []},
-            permanent, 5000, worker,
+            permanent, 1000, worker,
             [piqi_rpc_monitor]
         },
 
@@ -47,6 +50,5 @@ init(_Args) ->
             dynamic % XXX
         },
 
-    % XXX: use one_for_all?
     {ok, {{one_for_one, 1, 60}, [PiqiRpcMonitor, PiqiRpcMochiweb]}}.
 
