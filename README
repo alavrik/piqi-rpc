@@ -1,0 +1,26 @@
+!!! This is a work in progress, it is not quite usable yet !!!
+
+
+Piqi-RPC is a multi-format RPC-over-HTTP system for Erlang. It provides a
+convenient and reliable way to connect services written in Erlang with
+non-Erlang clients using JSON, XML or Google Protocol Buffers over plain HTTP.
+
+This is a rebar[1] package for the "piqi_rpc" Erlang application.
+
+
+The primary Piqi project repository is located here: 
+
+        https://github.com/alavrik/piqi
+
+
+Project homepage:
+
+        http://piqi.org
+
+
+Piqi-RPC documentation:
+
+        http://piqi.org/doc/piqi-rpc/
+
+        
+[1] https://github.com/basho/rebar
