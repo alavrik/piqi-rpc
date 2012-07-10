@@ -22,5 +22,5 @@ export REBAR_DEPS_DIR
 
 
 rm -f src
-ln -sf $REBAR_DEPS_DIR/piqi_src/piqi-rpc/src
+ln -sf "$REBAR_DEPS_DIR/piqi_src/piqi-rpc/src"
 
