@@ -12,53 +12,65 @@
 %% See the License for the specific language governing permissions and
 %% limitations under the License.
 
+%% Piqi compiler for Piqi-RPC/Erlang: top-level module and Escript entry point
+%% (see main/1)
+
 -module(piqic_erlang_rpc).
 -compile(export_all).
 
--include_lib("piqi/include/piqi_piqi.hrl").
+
+-include_lib("piqi/src/piqic.hrl").
 
 
 main(Args) ->
-    % call piqic_erlang_ext with command-line arguments and ?MODULE as the
-    % callback module.
-    piqic_erlang_ext:piqic_erlang_ext(?MODULE, Args).
+    % call piqic_erlang with command-line arguments and ?MODULE as a callback
+    % module
+    piqic_erlang:piqic_erlang(?MODULE, Args).
 
 
 %
-% Callback functions: custom_args() & gen_piqi(Piqi)
+% Callback functions
 %
 
-custom_args() ->
-    "--embed-piqi --gen-defaults ".
+generate(Context) ->
+    % call the main "piqic-erlang" compiler to generate *_piqi.{erl,hrl}
+    piqic_erlang:generate(Context),
 
-
-gen_piqi(Piqi) ->
+    Piqi = Context#context.piqi,
     gen_rpc_erl(Piqi),
     gen_impl_hrl(Piqi),
     gen_default_impl_erl(Piqi),
     ok.
 
+
 %
-% Generating Piqi-RCP server stubs: <ErlMod>_rpc.erl
+% Generating Piqi-RPC server stubs: <ErlMod>_rpc.erl
 %
 
 gen_rpc_erl(Piqi) ->
     Mod = Piqi#piqi.module,
-    ErlMod = Piqi#piqi.erlang_module,
+    ErlMod = to_string(Piqi#piqi.erlang_module),
     FuncList = Piqi#piqi.func,
 
-    Filename = binary_to_list(ErlMod) ++ "_rpc.erl",
+    Filename = ErlMod ++ "_rpc.erl",
 
     Code = iod("\n\n", [
         [
             "-module(", ErlMod, "_rpc).\n",
             "-compile(export_all).\n"
         ],
-        piqic_erlang_ext:gen_embedded_piqi(ErlMod),
+        gen_embedded_piqi(ErlMod),
         gen_get_piqi(ErlMod),
         gen_server_stubs(Mod, ErlMod, FuncList)
     ]),
-    ok = file:write_file(Filename, Code).
+    ok = piqic:write_file(Filename, Code).
+
+
+gen_embedded_piqi(ErlMod) ->
+    [
+        "piqi() ->\n",
+        "    ", ErlMod, ":piqi().\n"
+    ].
 
 
 gen_get_piqi(_ErlMod) ->
@@ -144,24 +156,18 @@ gen_func_clause(F, Mod, ErlMod) ->
     Code.
 
 
-iod(_Delim, []) -> [];
-iod(Delim, [H|T]) ->
-    lists:foldl(fun (X, Accu) -> [Accu, Delim, X] end, H, T).
-
-
 %
 % Generating Piqi-RCP function specs: <ErlMod>_impl.hrl
 %
 
 gen_impl_hrl(Piqi) ->
-    ErlMod = Piqi#piqi.erlang_module,
+    ErlMod = to_string(Piqi#piqi.erlang_module),
     ErlTypePrefix = Piqi#piqi.erlang_type_prefix,
     FuncList = Piqi#piqi.func,
 
-    Filename = binary_to_list(ErlMod) ++ "_impl.hrl",
+    Filename = ErlMod ++ "_impl.hrl",
 
-    ErlModStr = binary_to_list(ErlMod),
-    HeaderMacro = ["__", string:to_upper(ErlModStr), "_IMPL_HRL__" ],
+    HeaderMacro = ["__", string:to_upper(ErlMod), "_IMPL_HRL__" ],
     Code =
         [
             "-ifndef(", HeaderMacro, ").\n"
@@ -172,7 +178,7 @@ gen_impl_hrl(Piqi) ->
 
             "-endif.\n"
         ],
-    ok = file:write_file(Filename, iolist_to_binary(Code)).
+    ok = piqic:write_file(Filename, iolist_to_binary(Code)).
 
 
 gen_function_specs(ErlTypePrefix, FuncList) ->
@@ -203,14 +209,14 @@ gen_function_spec(ErlTypePrefix, F) ->
 
 
 %
-% Generating Piqi-RCP default implementation: <ErlMod>_default_impl.erl
+% Generating Piqi-RPC default implementation: <ErlMod>_default_impl.erl
 %
 
 gen_default_impl_erl(Piqi) ->
-    ErlMod = Piqi#piqi.erlang_module,
+    ErlMod = to_string(Piqi#piqi.erlang_module),
     FuncList = Piqi#piqi.func,
 
-    Filename = binary_to_list(ErlMod) ++ "_default_impl.erl",
+    Filename = ErlMod ++ "_default_impl.erl",
 
     Code =
         [
@@ -220,7 +226,7 @@ gen_default_impl_erl(Piqi) ->
 
             gen_default_impls(ErlMod, FuncList)
         ],
-    ok = file:write_file(Filename, iolist_to_binary(Code)).
+    ok = piqic:write_file(Filename, iolist_to_binary(Code)).
 
 
 gen_default_impls(ErlMod, FuncList) ->

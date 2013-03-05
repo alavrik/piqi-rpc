@@ -1,8 +1,23 @@
-include ../Makefile.config
-include $(PIQI_ROOT)/make/Makefile.dirs
-
-DIRS = src piqic-erlang-rpc
+REBAR ?= rebar
 
 
-clean::
-	$(MAKE) -C examples clean
+all:
+	$(REBAR) compile
+	$(MAKE) -C piqic-erlang-rpc
+
+
+deps:
+	$(REBAR) get-deps
+
+
+clean:
+	$(REBAR) clean
+	$(MAKE) -C piqic-erlang-rpc clean
+
+
+distclean: clean
+	rm -rf ebin deps
+
+
+.PHONY: deps
+

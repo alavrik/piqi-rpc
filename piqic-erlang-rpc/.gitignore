@@ -1,6 +1,2 @@
-*.beam
-
-piqi_piqi.erl
-piqi_piqi.hrl
-
-piqic-erlang-rpc
+/ebin
+/piqic-erlang-rpc

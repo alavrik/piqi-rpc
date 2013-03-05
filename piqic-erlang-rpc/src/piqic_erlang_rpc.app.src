@@ -1,0 +1,11 @@
+{application, piqic_erlang_rpc, [
+    {description, "Piqi Compiler for Piqi-RPC/Erlang"},
+    {vsn, git},
+    {modules, []},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {env, [
+    ]}
+]}.
+
+% ex: ft=erlang
