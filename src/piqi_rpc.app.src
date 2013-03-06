@@ -1,26 +1,16 @@
 {application, piqi_rpc, [
-  {description, "Piqi-RPC"},
-  {vsn, git},
-  {modules, [
-        piqi_rpc,
-        piqi_rpc_app,
-        piqi_rpc_sup,
-        piqi_rpc_runtime,
-        piqi_rpc_monitor,
-        piqi_rpc_http,
-        piqi_rpc_webmachine_resource,
-        piqic_erlang_rpc
-  ]},
-  {registered, [piqi_rpc_monitor, piqi_rpc_sup]},
-  {applications, [
+    {description, "Piqi-RPC -- JSON/XML/Protobuf over plain HTTP RPC system for Erlang"},
+    {vsn, git},
+    {modules, []},
+    {registered, [piqi_rpc_monitor, piqi_rpc_sup]},
+    {applications, [
         kernel,stdlib,
         piqi,
-        crypto,
-        mochiweb,
+        crypto, mochiweb,  % XXX: do we really need to specify these?
         webmachine
-  ]},
-  {mod, {piqi_rpc_app, []}},
-  {env, [
+    ]},
+    {mod, {piqi_rpc_app, []}},
+    {env, [
         % The list of Piqi-RPC services definitions, where each entry has the
         % following format:
         %
@@ -116,7 +106,8 @@
             % Erlang local name for the HTTP server
             {name, piqi_rpc_mochiweb}
         ]}
-  ]}
+    ]}
 ]}.
 
-% vim: ft=erlang
+
+% ex: ft=erlang
