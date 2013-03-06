@@ -1,5 +1,9 @@
 /deps
 /ebin
+/.eunit
+
+# created by "make dialyzer"
+/.dialyzer_deps_plt
 
 # vim
 *.swp
