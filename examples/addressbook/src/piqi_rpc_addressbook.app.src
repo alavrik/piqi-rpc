@@ -1,0 +1,10 @@
+{application, piqi_rpc_addressbook, [
+    {description, "Piqi-RPC addressbook service example"},
+    {vsn, git},
+    {modules, []},
+    {applications, [kernel, stdlib, piqi_rpc]},
+    {env, []}
+]}.
+
+
+% ex: ft=erlang

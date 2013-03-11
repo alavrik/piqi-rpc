@@ -29,8 +29,8 @@ start() ->
     ensure_started(piqi),
     ensure_started(inets), % inets is listed as a mochiweb dependency
     ensure_started(crypto),
-    ensure_started(webmachine),
     ensure_started(mochiweb),
+    ensure_started(webmachine),
     application:start(piqi_rpc).
 
 
