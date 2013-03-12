@@ -344,3 +344,6 @@
     ]
 ]
 
+
+(.custom-field erlang-type-prefix erlang-name)
+

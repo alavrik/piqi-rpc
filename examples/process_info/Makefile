@@ -1,43 +1,33 @@
+REBAR ?= rebar
 
-ERL_SOURCES = \
-	$(PIQI_ERL_FILES) \
-	process_info_example.erl
-
-
-ERL_APP_PATH = $(PIQI_ROOT)/piqi-erlang
-ERLC_FLAGS = #-pa $(PIQI_ROOT)/piqi-erlang #-I $(PIQI_ROOT)/piqi-erlang
-
-EBIN_DIR = .
+# workaround for a rebar bug
+unexport ERL_LIBS
 
 
-PIQIC = piqic-erlang-rpc
+all:
+	$(REBAR) compile
 
 
-PIQI_FILE = process_info.piqi
+deps:
+	$(REBAR) get-deps
 
 
-PIQI_ERL_MOD = process_info
+test:
+	./test
 
 
-PIQI_HRL_FILES = $(PIQI_ERL_MOD)_piqi.hrl $(PIQI_ERL_MOD)_piqi_impl.hrl
-PIQI_ERL_FILES = $(PIQI_ERL_MOD)_piqi.erl \
-		 $(PIQI_ERL_MOD)_piqi_default_impl.erl \
-		 $(PIQI_ERL_MOD)_piqi_rpc.erl
+#dialyzer: all
+#	dialyzer deps/piqi/ebin ./ebin
 
 
-PIQI_ERLANG_FILES = $(PIQI_ERL_FILES) $(PIQI_HRL_FILES)
+clean:
+	$(REBAR) clean skip_deps=true
 
 
-all: ebin
+distclean: clean
+	$(REBAR) delete-deps
+	rm -rf ebin deps
 
 
-$(PIQI_ERLANG_FILES): $(PIQI_FILE)
-	$(PIQIC) $(PIQIC_FLAGS) $<
-
-
-clean::
-	rm -f $(PIQI_ERLANG_FILES)
-
-
-include $(PIQI_ROOT)/make/Makefile.erlang
+.PHONY: test deps
 

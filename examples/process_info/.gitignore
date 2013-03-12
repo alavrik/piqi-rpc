@@ -1,5 +1,7 @@
-*.beam
+/ebin
+/.eunit
+/deps
 
-*_piqi*.erl
-*_piqi*.hrl
-
+# vim
+*.swp
+*.swo

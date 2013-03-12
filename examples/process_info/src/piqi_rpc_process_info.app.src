@@ -1,0 +1,10 @@
+{application, piqi_rpc_process_info, [
+    {description, "Piqi-RPC process_info service example"},
+    {vsn, git},
+    {modules, []},
+    {applications, [kernel, stdlib, piqi_rpc]},
+    {env, []}
+]}.
+
+
+% ex: ft=erlang
