@@ -63,7 +63,7 @@ Some useful commands:
 
     make test
     make dialyzer
-    make -C addressbook/example all test
+    make -C addressbook/example deps all test
 
 
 License
