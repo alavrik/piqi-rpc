@@ -30,6 +30,9 @@ execution.
 Full description and documentation are available on the project homepage here:
 http://piqi.org/doc/piqi-rpc/
 
+The master copy of the documentation page is located in this repository:
+[doc/piqi-rpc.md](doc/piqi-rpc.md)
+
 
 Examples
 --------
