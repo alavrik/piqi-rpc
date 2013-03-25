@@ -187,7 +187,7 @@ Piqi-RPC service can be unregistered by calling
 
 Full documentation for `piqi_rpc` Erlang application configuration is available
 at
-[piqi\_rpc.app.src](https://github.com/alavrik/piqi-rpc/blob/dev/src/piqi_rpc.app.src).
+[piqi\_rpc.app.src](https://github.com/alavrik/piqi-rpc/blob/master/src/piqi_rpc.app.src).
 
 ### Getting details of HTTP request from service implementation code
 
@@ -343,7 +343,7 @@ customized through `piqi_rpc` application environment configuration (i.e.
 
 There are several complete examples of Piqi-RPC servers and clients available in
 the
-["piqi-rpc/examples"](https://github.com/alavrik/piqi-rpc/tree/dev/examples)
+["piqi-rpc/examples"](https://github.com/alavrik/piqi-rpc/tree/master/examples)
 sub-directory.
 
 One of the examples contains a simple addressbook service that includes three
