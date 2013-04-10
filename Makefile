@@ -10,6 +10,10 @@ deps:
 	$(REBAR) get-deps
 
 
+test:
+	$(REBAR) eunit skip_deps=true
+
+
 dialyzer: all .dialyzer_deps_plt
 	dialyzer --plt .dialyzer_deps_plt ./ebin
 

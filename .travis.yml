@@ -1,0 +1,17 @@
+language: erlang
+
+# install rebar 2.1.0-pre that supports 'raw' dependencies
+before_install:
+   - wget https://github.com/alavrik/piqi-erlang/wiki/rebar
+   - chmod +x rebar
+
+script: "./travis-ci"
+otp_release:
+   - R16B
+   - R15B03
+   - R15B02
+   - R15B01
+   - R15B
+   - R14B04
+   - R14B03
+   - R14B02
