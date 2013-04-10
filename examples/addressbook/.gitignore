@@ -1,6 +1,5 @@
 /ebin
 /.eunit
-/deps
 
 # vim
 *.swp
