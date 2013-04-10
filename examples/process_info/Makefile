@@ -9,6 +9,7 @@ all:
 
 
 deps:
+	cd deps; for i in ../../../deps/*; do ln -sf $$i; done
 	$(REBAR) get-deps
 
 
@@ -25,8 +26,9 @@ clean:
 
 
 distclean: clean
-	$(REBAR) delete-deps
-	rm -rf ebin deps
+	#$(REBAR) delete-deps
+	cd deps; for i in ../../../deps/*; do rm -f `basename $$i`; done
+	rm -rf ebin #deps
 
 
 .PHONY: test deps
