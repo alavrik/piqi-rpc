@@ -7,7 +7,6 @@ before_install:
 
 script: "./travis-ci"
 otp_release:
-   - R16B
    - R15B03
    - R15B02
    - R15B01
