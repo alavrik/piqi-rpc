@@ -25,8 +25,13 @@
 main(Args) ->
     % call piqic_erlang with command-line arguments and ?MODULE as a callback
     % module
-    piqic_erlang:piqic_erlang(?MODULE, Args).
-
+    case piqic_erlang:piqic_erlang(?MODULE, Args) of
+        ok ->
+            ok;
+        {error, ErrorStr} ->
+            piqic_erlang:print_error(ErrorStr),
+            erlang:halt(1)
+    end.
 
 %
 % Callback functions
