@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/alavrik/piqi-rpc.png)](https://travis-ci.org/alavrik/piqi-rpc)
+
+
 Piqi-RPC is an RPC-over-HTTP system for Erlang.
 
 
