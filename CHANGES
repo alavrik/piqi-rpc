@@ -1,0 +1,36 @@
+Piqi-RPC 0.7.0 (October 28, 2013)
+=================================
+
+The main change of this release is the rewrite of the underlying
+"piqic-erlang" code generator in Erlang. As a result:
+
+- Piqi-RPC code was moved from the main Piqi project repository into its own
+  repo
+- drop dependency on "piqi_src" and OCaml code
+
+This was a major effort and it wouldn't have been possible without support of
+many Piqi-erlang and Piqi-RPC users. Thank you everyone for your bug reports,
+suggestions and patience.
+
+Thanks to Motiejus Jakštys for contributing the fix for piqic-erlang-rpc not
+printing compilation errors.
+
+Other changes:
+
+  - the default Webmachine version is now 1.10.5
+
+Miscellaneous:
+
+  - piqi-rpc documentation is now distributed with the source code
+    (doc/piqi-rpc.md)
+  - continuous builds via Travis-CI
+
+
+Piqi 0.6.0 (February 3, 2013)
+=============================
+
+  Changelog for v0.6.0 and earlier releases is available here (the piqi-rpc
+  project used to be a subtree in the piqi repository):
+
+      https://github.com/alavrik/piqi/blob/master/CHANGES
+
