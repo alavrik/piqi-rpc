@@ -177,7 +177,7 @@ Piqi-RPC service can be unregistered by calling
 
     -   pretty-print JSON and XML output (default = true)
 
-    -   omit fields with 'null' values from JSON output (default = true)
+    -   omit fields with 'null' and '[]' values from JSON output (default = true)
 
     -   treat unknown and duplicate fields as errors when parsing JSON or XML
         input (default = false)

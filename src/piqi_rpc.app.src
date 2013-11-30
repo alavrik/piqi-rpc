@@ -57,8 +57,8 @@
             % pretty-print JSON and XML output (default = true)
             %{'pretty_print', true}
             %
-            % omit fields with 'null' values from JSON output (default = true)
-            %{'json_omit_null_fields', true}
+            % omit fields with 'null' and '[]' values from JSON output (default = true)
+            %{'json_omit_missing_fields', true}
             %
             % treat unknown and duplicate fields as errors when parsing JSON or
             % XML input (default = false)
