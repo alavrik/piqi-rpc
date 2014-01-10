@@ -62,8 +62,10 @@ gen_rpc_erl(Piqi) ->
     Code = iod("\n\n", [
         [
             "-module(", ErlMod, "_rpc).\n",
-            "-compile(export_all).\n"
+            "-compile(export_all).\n\n",
+            "-include(\"", ErlMod, ".hrl\")."
         ],
+        maybe_gen_rpc_callback_specs(Piqi#piqi.erlang_type_prefix, FuncList),
         gen_embedded_piqi(ErlMod),
         gen_get_piqi(ErlMod),
         gen_server_stubs(Mod, ErlMod, FuncList)
@@ -160,6 +162,33 @@ gen_func_clause(F, Mod, ErlMod) ->
     ],
     Code.
 
+% Generating Piqi-RPC callback specs for: <ErlMod>_rpc.erl
+%
+% Since callbacks are only supported since R15B, will only generate if Erlang
+% version is R15B+
+maybe_gen_rpc_callback_specs(ErlTypePrefix, FuncList) ->
+    case can_use_callbacks() of
+        true ->
+            gen_rpc_callback_specs(ErlTypePrefix, FuncList);
+        _ ->
+            []
+    end.
+
+%% Check if Erlang version is R15+, to determine whether callbacks can be used.
+can_use_callbacks() ->
+    case erlang:system_info(otp_release) of
+        %% Erlang uses lexicographic ordering, so this works
+        [$R, A, B, $B | _] ->
+            ([A, B] >= "15");
+        _ ->
+            false
+    end.
+
+gen_rpc_callback_specs(ErlTypePrefix, FuncList) ->
+    [gen_callback_spec(ErlTypePrefix, F) || F <- FuncList].
+
+gen_callback_spec(ErlTypePrefix, F) ->
+    gen_spec("-callback", ErlTypePrefix, F).
 
 %
 % Generating Piqi-RCP function specs: <ErlMod>_impl.hrl
@@ -189,8 +218,10 @@ gen_impl_hrl(Piqi) ->
 gen_function_specs(ErlTypePrefix, FuncList) ->
     [ gen_function_spec(ErlTypePrefix, X) || X <- FuncList ].
 
-
 gen_function_spec(ErlTypePrefix, F) ->
+    gen_spec("-spec", ErlTypePrefix, F).
+
+gen_spec(SpecAttribute, ErlTypePrefix, F) ->
     ErlName = F#func.erlang_name,
     Input =
         case F#func.input of
@@ -207,10 +238,14 @@ gen_function_spec(ErlTypePrefix, F) ->
     Error =
         case F#func.error of
             'undefined' -> "";
-            _ -> [ " | {error, ",  ErlTypePrefix, ErlName, "_error()}" ]
+            _ -> [ " |\n    {error, ",  ErlTypePrefix, ErlName, "_error()}" ]
         end,
 
-    [ "-spec ", ErlName, "/1 :: (", Input, ") -> ", Output, Error, ".\n\n" ].
+    [
+        SpecAttribute, " ", ErlName, "(", Input, ") ->\n",
+        "    ", Output,
+        Error, ".\n\n"
+    ].
 
 
 %
@@ -226,17 +261,31 @@ gen_default_impl_erl(Piqi) ->
     Code =
         [
             "-module(", ErlMod, "_default_impl).\n"
-            "-compile(export_all).\n\n"
-            "-include(\"", ErlMod, "_impl.hrl\").\n\n",
-
+            "-compile(export_all).\n\n",
+            impl_include_or_behaviour_export(Piqi),
+            "\n",
             gen_default_impls(ErlMod, FuncList)
         ],
     ok = piqic:write_file(Filename, iolist_to_binary(Code)).
 
+impl_include_or_behaviour_export(Piqi) ->
+    ErlMod = to_string(Piqi#piqi.erlang_module),
+    FuncList = Piqi#piqi.func,
+    case can_use_callbacks() of
+        true ->
+            [
+                "-behaviour(", ErlMod, "_rpc).\n\n",
+                [ gen_export(F) || F <- FuncList ]
+            ];
+        false ->
+            ["-include(\"", ErlMod, "_impl.hrl\").\n"]
+    end.
+
+gen_export(F) ->
+    ["-export([", F#func.erlang_name, "/1]).\n"].
 
 gen_default_impls(ErlMod, FuncList) ->
     [ gen_default_impl(ErlMod, X) || X <- FuncList ].
-
 
 gen_default_impl(ErlMod, F) ->
     ErlName = F#func.erlang_name,
