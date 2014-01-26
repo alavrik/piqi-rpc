@@ -149,6 +149,7 @@ known_content_type(ReqData, Context) ->
             "application/json" -> true;
             "application/xml" -> true;
             "application/x-protobuf" -> true;
+            "text/plain" -> true;
             % allow content-type to be undefined when the body is empty
             'undefined' when Body == <<>> -> true;
             "" when Body == <<>> -> true;
@@ -157,12 +158,14 @@ known_content_type(ReqData, Context) ->
 
     % distinguish between "no body" and "empty body" cases: when communicating
     % using Protocol Buffers, empty body can appear when an empty list or an
-    % empty record is sent as the input parameter
+    % empty record is sent as the input parameter; same applies to frameless Piq
+    % (ContentType =:= "text/plain")
     RealBody =
         case Body of
             <<>> when ContentType =:= 'undefined';
                       ContentType =:= "";
-                      ContentType =/= "application/x-protobuf" ->
+                      (ContentType =/= "application/x-protobuf" andalso
+                       ContentType =/= "text/plain") ->
                 'undefined'; % no body
             _ -> Body
         end,

@@ -134,6 +134,12 @@ throw_rpc_error(Error) ->
 %
 
 check_empty_input('undefined') -> ok;
+check_empty_input(<<>>) ->
+    % empty Protobuf and frameless Piq are represented as empty binary rather
+    % than 'undefined' -- this is due to the fact that, in these formats, empty
+    % input has the same representation as empty record and we can't use
+    % 'undefined' for the latter
+    ok;
 check_empty_input(_) ->
     throw_rpc_error({'invalid_input', "empty input expected"}).
 
