@@ -113,6 +113,10 @@ gen_func_clause(F, Mod, ErlMod) ->
     Name = F#func.name,
     ErlName = F#func.erlang_name,
     ScopedName = [ Mod, "/", Name ],
+    % XXX, NOTE: use of piqic:erlname() here is a quick hack but this should be
+    % enough; to do it properly, we'd need to resolve <Name>-input|output|error
+    % Piqi type and use its erlang_name
+    ErlTypeName = piqic:erlname(Name),
     InputCode =
         case F#func.input of
             'undefined' -> % the function doesn't have input
@@ -122,7 +126,7 @@ gen_func_clause(F, Mod, ErlMod) ->
                 ];
             _ ->
                 [
-"            Input = piqi_rpc_runtime:decode_input(?MODULE, fun ", ErlMod, ":parse_", ErlName, "_input/1, <<\"", ScopedName, "-input\">>, _InputFormat, InputData, Options),\n"
+"            Input = piqi_rpc_runtime:decode_input(?MODULE, fun ", ErlMod, ":parse_", ErlTypeName, "_input/1, <<\"", ScopedName, "-input\">>, _InputFormat, InputData, Options),\n"
 "            case piqi_rpc_runtime:call(Mod, ", ErlName, ", Input) of\n"
                 ]
         end,
@@ -134,7 +138,7 @@ gen_func_clause(F, Mod, ErlMod) ->
             _ ->
                 [
 "                {ok, Output} ->\n"
-"                    piqi_rpc_runtime:encode_output(?MODULE, fun ", ErlMod, ":gen_", ErlName, "_output/1, <<\"", ScopedName, "-output\">>, _OutputFormat, Output, Options)"
+"                    piqi_rpc_runtime:encode_output(?MODULE, fun ", ErlMod, ":gen_", ErlTypeName, "_output/1, <<\"", ScopedName, "-output\">>, _OutputFormat, Output, Options)"
                 ]
         end,
 
@@ -145,7 +149,7 @@ gen_func_clause(F, Mod, ErlMod) ->
             _ ->
                 [[
 "                {error, Error} ->\n"
-"                    piqi_rpc_runtime:encode_error(?MODULE, fun ", ErlMod, ":gen_", ErlName, "_error/1, <<\"", ScopedName, "-error\">>, _OutputFormat, Error, Options)"
+"                    piqi_rpc_runtime:encode_error(?MODULE, fun ", ErlMod, ":gen_", ErlTypeName, "_error/1, <<\"", ScopedName, "-error\">>, _OutputFormat, Error, Options)"
                 ]]
         end,
 
@@ -222,23 +226,27 @@ gen_function_spec(ErlTypePrefix, F) ->
     gen_spec("-spec", ErlTypePrefix, F).
 
 gen_spec(SpecAttribute, ErlTypePrefix, F) ->
+    % XXX, NOTE: use of piqic:erlname() here is a quick hack but this should be
+    % enough; to do it properly, we'd need to resolve <Name>-input|output|error
+    % Piqi type and use its erlang_name
+    ErlTypeName = [ErlTypePrefix, piqic:erlname(F#func.name)],
     ErlName = F#func.erlang_name,
     Input =
         case F#func.input of
             'undefined' -> "'undefined'";
-            _ -> [ ErlTypePrefix, ErlName, "_input()" ]
+            _ -> [ ErlTypeName, "_input()" ]
         end,
 
     Output =
         case F#func.output of
             'undefined' -> "ok";
-            _ -> [ "{ok, ", ErlTypePrefix, ErlName, "_output()}" ]
+            _ -> [ "{ok, ", ErlTypeName, "_output()}" ]
         end,
 
     Error =
         case F#func.error of
             'undefined' -> "";
-            _ -> [ " |\n    {error, ",  ErlTypePrefix, ErlName, "_error()}" ]
+            _ -> [ " |\n    {error, ", ErlTypeName, "_error()}" ]
         end,
 
     [
@@ -298,7 +306,11 @@ gen_default_impl(ErlMod, F) ->
     Output =
         case F#func.output of
             'undefined' -> "ok";
-            _ -> [ "{ok, ", ErlMod, ":default_", ErlName, "_output()}" ]
+            _ ->
+                % XXX, NOTE: use of piqic:erlname() here is a quick hack but
+                % this should be enough; to do it properly, we'd need to resolve
+                % <Name>-output Piqi type and use its erlang_name
+                [ "{ok, ", ErlMod, ":default_", piqic:erlname(F#func.name), "_output()}" ]
         end,
 
     [ ErlName, "(", Input, ") -> ", Output, ".\n\n" ].
