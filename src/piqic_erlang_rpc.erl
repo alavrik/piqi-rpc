@@ -68,7 +68,8 @@ gen_rpc_erl(Context) ->
         maybe_gen_rpc_callback_specs(Context, FuncList),
         gen_embedded_piqi(ErlMod),
         gen_get_piqi(ErlMod),
-        gen_server_stubs(Context, FuncList, Mod, ErlMod)
+        gen_func_io_helpers(Context, FuncList, ErlMod),
+        gen_server_stubs(FuncList, Mod)
     ]),
     ok = piqic:write_file(Filename, Code).
 
@@ -86,9 +87,61 @@ gen_get_piqi(_ErlMod) ->
         "    piqi_rpc_runtime:get_piqi(piqi(), OutputFormat, Options).\n"
     ].
 
+%% This generates convenient calls for (de)serialisation and
+%% default value generation of function input | output | errors.
+%%
+%% They are intended to be used as a public API for serialisation
+%% and default value generation.
+gen_func_io_helpers(Context, FuncList, ErlMod) ->
+    [ gen_func_io_helpers_1(Context, ErlMod, F) || F <- FuncList ].
 
-gen_server_stubs(Context, FuncList, Mod, ErlMod) ->
-    FuncClauses = [ gen_func_clause(Context, X, Mod, ErlMod) || X <- FuncList ],
+gen_func_io_helpers_1(Context, ErlMod, F) ->
+    IOTypes = [input, output, error],
+    HelperKinds = [parse, gen, default],
+    lists:map(
+        fun({HelperKind, IOType}) ->
+            gen_func_io_helper(Context, ErlMod, F, HelperKind, IOType)
+        end,
+        [{HelpK, IOT} || HelpK <- HelperKinds, IOT <- IOTypes]
+    ).
+
+gen_func_io_helper(Context, ErlMod, F, HelperKind, IOType) ->
+    ErlName = F#func.erlang_name,
+    case get_func_io_type(F, IOType) of
+        undefined ->
+            [];
+        _ ->
+            IOTypeStr = atom_to_list(IOType),
+            InputType = gen_param_typename(Context, F, IOTypeStr),
+            HelperKindPrefix = atom_to_list(HelperKind) ++ "_",
+            FuncName = [HelperKindPrefix, ErlName, "_", IOTypeStr],
+            lists:map(fun (Args) ->
+                    ArgCallStr = ["(", iod(", ", Args), ")"],
+                    [
+                         FuncName, ArgCallStr, " ->\n",
+                        "   ", ErlMod, ":", HelperKindPrefix,
+                            InputType, ArgCallStr, ".\n",
+                        "\n"
+                    ]
+                end,
+                get_func_io_helper_arg_seq(HelperKind)
+            )
+    end.
+
+get_func_io_helper_arg_seq(default) ->
+    [[]];
+get_func_io_helper_arg_seq(_) ->
+    [["Data"], ["Data", "Format"], ["Data", "Format", "Opts"]].
+
+get_func_io_type(F, input) ->
+    F#func.input;
+get_func_io_type(F, output) ->
+    F#func.output;
+get_func_io_type(F, error) ->
+    F#func.error.
+
+gen_server_stubs(FuncList, Mod) ->
+    FuncClauses = [ gen_func_clause(X, Mod) || X <- FuncList ],
     [
         "rpc(Mod, Name, InputData, _InputFormat, _OutputFormat, Options) ->\n",
         "    try\n",
@@ -109,7 +162,7 @@ gen_default_clause() ->
     ].
 
 
-gen_func_clause(Context, F, Mod, ErlMod) ->
+gen_func_clause(F, Mod) ->
     Name = F#func.name,
     ErlName = F#func.erlang_name,
     ScopedName = [ Mod, "/", Name ],
@@ -121,9 +174,10 @@ gen_func_clause(Context, F, Mod, ErlMod) ->
 "            case piqi_rpc_runtime:call(Mod, ",  ErlName, ", 'undefined') of\n"
                 ];
             _ ->
-                InputType = gen_param_typename(Context, F, "input"),
+                ParseFun = ["fun parse_", ErlName, "_input/1"],
                 [
-"            Input = piqi_rpc_runtime:decode_input(?MODULE, fun ", ErlMod, ":parse_", InputType, "/1, <<\"", ScopedName, "-input\">>, _InputFormat, InputData, Options),\n"
+"            Input = piqi_rpc_runtime:decode_input(?MODULE, ", ParseFun, ",\n"
+"               <<\"", ScopedName, "-input\">>, _InputFormat, InputData, Options),\n"
 "            case piqi_rpc_runtime:call(Mod, ", ErlName, ", Input) of\n"
                 ]
         end,
@@ -133,10 +187,11 @@ gen_func_clause(Context, F, Mod, ErlMod) ->
             'undefined' -> % the function doesn't produce output
 "                ok -> ok";
             _ ->
-                OutputType = gen_param_typename(Context, F, "output"),
+                EncodeFun = ["fun gen_", ErlName, "_output/1"],
                 [
 "                {ok, Output} ->\n"
-"                    piqi_rpc_runtime:encode_output(?MODULE, fun ", ErlMod, ":gen_", OutputType, "/1, <<\"", ScopedName, "-output\">>, _OutputFormat, Output, Options)"
+"                    piqi_rpc_runtime:encode_output(?MODULE, ", EncodeFun, ",\n"
+"                       <<\"", ScopedName, "-output\">>, _OutputFormat, Output, Options)"
                 ]
         end,
 
@@ -145,10 +200,11 @@ gen_func_clause(Context, F, Mod, ErlMod) ->
             'undefined' -> % the function doesn't produce errors
                 [];
             _ ->
-                ErrorType = gen_param_typename(Context, F, "error"),
+                ErrEncodeFun = ["fun gen_", ErlName, "_error/1"],
                 [[
 "                {error, Error} ->\n"
-"                    piqi_rpc_runtime:encode_error(?MODULE, fun ", ErlMod, ":gen_", ErrorType, "/1, <<\"", ScopedName, "-error\">>, _OutputFormat, Error, Options)"
+"                    piqi_rpc_runtime:encode_error(?MODULE, ", ErrEncodeFun, ",\n",
+"                       <<\"", ScopedName, "-error\">>, _OutputFormat, Error, Options)"
                 ]]
         end,
 
@@ -310,7 +366,7 @@ gen_default_impls(Context, FuncList) ->
 gen_default_impl(Context, F) ->
     Piqi = Context#context.piqi,
     ErlMod = Piqi#piqi.erlang_module,
-
+    FuncName = F#func.erlang_name,
     Input =
         case F#func.input of
             'undefined' -> "'undefined'";
@@ -321,9 +377,8 @@ gen_default_impl(Context, F) ->
         case F#func.output of
             'undefined' -> "ok";
             _ ->
-                ErlTypeName = gen_param_typename(Context, F, "output"),
-                [ "{ok, ", ErlMod, ":default_", ErlTypeName, "()}" ]
+                [ "{ok, ", ErlMod, "_rpc:default_", FuncName, "_output()}" ]
         end,
 
-    [ F#func.erlang_name, "(", Input, ") -> ", Output, ".\n\n" ].
+    [ FuncName, "(", Input, ") -> ", Output, ".\n\n" ].
 
