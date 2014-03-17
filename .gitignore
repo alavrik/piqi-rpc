@@ -1,6 +1,7 @@
 /deps
 /ebin
 /.eunit
+.rebar
 
 # created by "make dialyzer"
 /.dialyzer_deps_plt
