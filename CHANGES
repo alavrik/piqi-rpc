@@ -1,3 +1,26 @@
+Piqi-RPC 0.7.1 (April 7, 2014)
+==============================
+
+Fixes:
+
+  - Fix piqi-erlang-rpc generating incorrect code when .erlang-name property is
+    used in function parameters
+  - Fix generation of incorrect code when .erlang-name property is set in
+    functions
+
+New features:
+
+  - Add `-callback` specs to `_piqi_rpc.erl` for Erlang R15B+
+    (thanks to Ignas Vyšniauskas)
+  - Add function field serialization / default helpers to `_piqi_rpc.erl`
+    (thanks to Ignas Vyšniauskas)
+  - Assume Piq input when Content-Type is "text/plain"
+
+Miscellaneous:
+
+  - Rename service option: json_omit_null_fields -> json_omit_missing_fields
+
+
 Piqi-RPC 0.7.0 (October 28, 2013)
 =================================
 
