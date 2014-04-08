@@ -60,7 +60,8 @@ http://groups.google.com/group/piqi
 Contributing
 ------------
 
-Your contributions are always welcome. Just open a pull request.
+Your contributions are always welcome. Just open a pull request. Check [TODO
+list](TODO) for ideas.
 
 Some useful commands:
 

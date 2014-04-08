@@ -1,0 +1,32 @@
+This is a list of ideas of how to improve piqi-rpc.
+
+Current issues and feature requests: https://github.com/alavrik/piqi-rpc/issues
+
+
+Improvements
+------------
+
+- implement piqi-rpc based on Cowboy instead of Webmachine. Cowboy is known to
+  be a lot faster. It is also packaged better than Webmachine and has fewer
+  dependencies.
+
+- rename call handlers from foo() to handle_foo()
+
+- following that, get rid of *_impl.erl files by moving their contents to
+  *_piqi_rpc.erl
+
+- remove piqi_rpc_monitor module. It is rather useless
+
+- don't store service configuration in application environment, because
+  stop_service doesn't work from application:stop(); just use an ets table
+  instead
+
+
+Miscellaneous
+-------------
+
+- more tests
+
+
+
+# ex: et sw=4 ts=4
