@@ -255,43 +255,38 @@ find_rpc_service(RpcService, Services) ->
 % API implementation
 %
 
--spec add_service/1 ::
-    ( RpcService :: piqi_rpc_service() ) -> ok.
+-spec add_service( RpcService :: piqi_rpc_service() ) -> ok.
 
 
 add_service(RpcService) ->
     gen_server:call(?SERVER, {add_service, RpcService}).
 
 
--spec remove_service/1 ::
-    ( RpcService :: piqi_rpc_service() ) -> ok.
+-spec remove_service( RpcService :: piqi_rpc_service() ) -> ok.
 
 remove_service(RpcService) ->
     gen_server:call(?SERVER, {remove_service, RpcService}).
 
 
--spec pause_service/1 ::
-    ( ImplMod :: atom() ) -> ok | {error, any()}.
+-spec pause_service( ImplMod :: atom() ) -> ok | {error, any()}.
 
 pause_service(ImplMod) ->
     gen_server:call(?SERVER, {update_status, ImplMod, 'paused'}).
 
 
--spec resume_service/1 ::
-    ( ImplMod :: atom() ) -> ok | {error, any()}.
+-spec resume_service( ImplMod :: atom() ) -> ok | {error, any()}.
 
 resume_service(ImplMod) ->
     gen_server:call(?SERVER, {update_status, ImplMod, 'active'}).
 
 
--spec get_service_status/1 ::
-    ( ImplMod :: atom() ) -> service_status() | 'undefined'.
+-spec get_service_status( ImplMod :: atom() ) -> service_status() | 'undefined'.
 
 get_service_status(ImplMod) ->
     gen_server:call(?SERVER, {get_status, ImplMod}).
 
 
--spec get_status/0 :: () -> 'active'.
+-spec get_status() -> 'active'.
 
 get_status() ->
     gen_server:call(?SERVER, get_status).

@@ -67,14 +67,14 @@ cleanup() ->
     lists:foreach(fun remove_service/1, RpcServices).
 
 
--spec add_service/1 :: ( piqi_rpc_service() ) -> ok.
+-spec add_service( piqi_rpc_service() ) -> ok.
 
 add_service(RpcService = {_ImplMod, _RpcMod, _UrlPath, _Options}) ->
     Route = rpc_service_to_webmachine_route(RpcService),
     ok = webmachine_router:add_route(Route).
 
 
--spec remove_service/1 :: ( piqi_rpc_service() ) -> ok.
+-spec remove_service( piqi_rpc_service() ) -> ok.
 
 remove_service(RpcService = {_ImplMod, _RpcMod, _UrlPath, _Options}) ->
     Route = rpc_service_to_webmachine_route(RpcService),
@@ -84,7 +84,7 @@ remove_service(RpcService = {_ImplMod, _RpcMod, _UrlPath, _Options}) ->
 % see Webmachine documentation and webmachine_route.erl for format description.
 -type webmachine_route() :: {_, _, _}.
 
--spec rpc_service_to_webmachine_route/1 :: (
+-spec rpc_service_to_webmachine_route(
     piqi_rpc_service() ) -> webmachine_route().
 
 % @hidden

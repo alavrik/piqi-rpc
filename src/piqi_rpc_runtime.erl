@@ -124,7 +124,7 @@ encode_error(RpcMod, Encoder, TypeName, OutputFormat, Output, Options) ->
     end.
 
 
--spec throw_rpc_error/1 :: (Error :: piqi_rpc_rpc_error()) -> no_return().
+-spec throw_rpc_error(Error :: piqi_rpc_rpc_error()) -> no_return().
 throw_rpc_error(Error) ->
     throw({'rpc_error', Error}).
 
@@ -144,13 +144,13 @@ check_empty_input(_) ->
     throw_rpc_error({'invalid_input', "empty input expected"}).
 
 
--spec handle_unknown_function/0 :: () -> no_return().
+-spec handle_unknown_function() -> no_return().
 
 handle_unknown_function() ->
     throw_rpc_error('unknown_function').
 
 
--spec handle_invalid_result/2 :: (
+-spec handle_invalid_result(
     Name :: binary(),
     Result :: any()) -> no_return().
 
@@ -202,7 +202,7 @@ format_term(Term) ->
     format_term(Term, _MaxLen = 8192).
 
 
--spec format_term/2 :: (
+-spec format_term(
     Term :: term(),
     MaxLen :: pos_integer()) -> iolist().
 

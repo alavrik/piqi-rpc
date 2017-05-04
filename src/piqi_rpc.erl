@@ -29,7 +29,15 @@ start() ->
     ensure_started(piqi),
     ensure_started(inets), % inets is listed as a mochiweb dependency
     ensure_started(crypto),
+
+    ensure_started(asn1),
+    ensure_started(public_key),
+    ensure_started(ssl),
+    ensure_started(xmerl),
+    ensure_started(compiler),
+    ensure_started(syntax_tools),
     ensure_started(mochiweb),
+
     ensure_started(webmachine),
     application:start(piqi_rpc).
 
@@ -63,7 +71,7 @@ ensure_started(App) ->
     end.
 
 
--spec normalize_service_def/1 :: ( piqi_rpc_service_def() ) -> piqi_rpc_service().
+-spec normalize_service_def( piqi_rpc_service_def() ) -> piqi_rpc_service().
 
 normalize_service_def(RpcService = {_ImplMod, _RpcMod, _UrlPath, _Options}) ->
     RpcService;
@@ -72,7 +80,7 @@ normalize_service_def(_RpcServiceDef = {ImplMod, RpcMod, UrlPath}) ->
     _RpcService = {ImplMod, RpcMod, UrlPath, _Options = []}.
 
 
--spec add_service/1 :: ( piqi_rpc_service_def() ) -> ok.
+-spec add_service( piqi_rpc_service_def() ) -> ok.
 
 add_service(RpcServiceDef) ->
     RpcService = normalize_service_def(RpcServiceDef),
@@ -90,7 +98,7 @@ add_service(RpcServiceDef) ->
     end.
 
 
--spec remove_service/1 :: ( piqi_rpc_service_def() ) -> ok.
+-spec remove_service( piqi_rpc_service_def() ) -> ok.
 
 remove_service(RpcServiceDef) ->
     RpcService = normalize_service_def(RpcServiceDef),
@@ -101,17 +109,17 @@ remove_service(RpcServiceDef) ->
     ok = set_service_defs(ServiceDefs -- [RpcServiceDef]).
 
 
--spec get_services/0 :: () -> [piqi_rpc_service()].
+-spec get_services() -> [piqi_rpc_service()].
 get_services() ->
     [normalize_service_def(X) || X <- get_service_defs()].
 
 
--spec get_service_defs/0 :: () -> [piqi_rpc_service_def()].
+-spec get_service_defs() -> [piqi_rpc_service_def()].
 get_service_defs() ->
     get_env('rpc_services').
 
 
--spec set_service_defs/1 :: ( [piqi_rpc_service_def()] ) -> ok.
+-spec set_service_defs( [piqi_rpc_service_def()] ) -> ok.
 % @hidden
 set_service_defs(RpcServiceDefs) ->
     set_env('rpc_services', RpcServiceDefs).
