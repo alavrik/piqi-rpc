@@ -21,7 +21,7 @@
 
 -module(piqi_rpc_runtime).
 
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include_lib("piqi/include/piqi_rpc_piqi.hrl").

@@ -16,7 +16,7 @@
 %% (see main/1)
 
 -module(piqic_erlang_rpc).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include_lib("piqi/src/piqic.hrl").
@@ -62,7 +62,7 @@ gen_rpc_erl(Context) ->
     Code = iod("\n\n", [
         [
             "-module(", ErlMod, "_rpc).\n",
-            "-compile(export_all).\n\n",
+            "-compile([export_all, nowarn_export_all]).\n\n",
             "-include(\"", ErlMod, ".hrl\")."
         ],
         maybe_gen_rpc_callback_specs(Context, FuncList),
@@ -337,7 +337,7 @@ gen_default_impl_erl(Context) ->
     Code =
         [
             "-module(", ErlMod, "_default_impl).\n"
-            "-compile(export_all).\n\n",
+            "-compile([export_all, nowarn_export_all]).\n\n",
             impl_include_or_behaviour_export(Piqi),
             "\n",
             gen_default_impls(Context, FuncList)

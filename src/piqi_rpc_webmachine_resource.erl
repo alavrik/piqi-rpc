@@ -17,7 +17,7 @@
 %%
 -module(piqi_rpc_webmachine_resource).
 
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 
 -include_lib("webmachine/include/webmachine.hrl").

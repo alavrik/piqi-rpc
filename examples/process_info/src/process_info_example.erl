@@ -1,5 +1,5 @@
 -module(process_info_example).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 -include("process_info_piqi_impl.hrl").
 

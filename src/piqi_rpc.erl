@@ -93,8 +93,9 @@ add_service(RpcServiceDef) ->
         ok = set_service_defs([RpcService | ServiceDefs])
     catch
         Class:Reason ->
+            Stacktrace = erlang:get_stacktrace(),
             catch remove_service(RpcServiceDef),
-            erlang:raise(Class, Reason, erlang:get_stacktrace())
+            erlang:raise(Class, Reason, Stacktrace)
     end.
 
 
