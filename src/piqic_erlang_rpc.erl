@@ -76,6 +76,8 @@ gen_rpc_erl(Context) ->
 
 gen_embedded_piqi(ErlMod) ->
     [
+        "piqi_hash() ->\n",
+        "    ", ErlMod, ":piqi_hash().\n"
         "piqi() ->\n",
         "    ", ErlMod, ":piqi().\n"
     ].
