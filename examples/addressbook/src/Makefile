@@ -41,16 +41,16 @@ PIQI_RPC_ERLANG_FILES = $(PIQI_RPC_ERL_FILES) $(PIQI_RPC_HRL_FILES)
 piqi: $(PIQI_ERLANG_FILES) $(PIQI_RPC_ERLANG_FILES)
 
 
-$(PIQI_ERLANG_FILES): $(PIQI_FILES)
+$(PIQI_ERLANG_FILES): $(PIQI_FILES) $(PIQIC)
 	set -e; \
-	for i in $^; do \
+	for i in $(PIQI_FILES); do \
 		$(PIQIC) $(PIQIC_FLAGS) $$i; \
 	done
 
 
-$(PIQI_RPC_ERLANG_FILES): $(PIQI_RPC_FILES)
+$(PIQI_RPC_ERLANG_FILES): $(PIQI_RPC_FILES) $(PIQIC_RPC)
 	set -e; \
-	for i in $^; do \
+	for i in $(PIQI_RPC_FILES); do \
 		$(PIQIC_RPC) $(PIQIC_FLAGS) $$i; \
 	done
 
