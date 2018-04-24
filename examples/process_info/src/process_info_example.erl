@@ -1,16 +1,17 @@
 -module(process_info_example).
 -compile([export_all, nowarn_export_all]).
 
--include("process_info_piqi_impl.hrl").
+-behaviour(process_info_piqi).
+-include("process_info_piqi.hrl").
 
 
-list_processes('undefined') ->
+rpc_handle_list_processes('undefined') ->
     L = erlang:processes(),
     Res = [pid_to_list(X) || X <- L],
     {ok, Res}.
 
 
-process_info(Input) ->
+rpc_handle_process_info(Input) ->
     try do_process_info(Input)
     catch
         {error, _} = Error -> Error
@@ -123,7 +124,7 @@ encode_suspendee({Suspendee, ActiveSuspendCount, OutstandingSuspendCount}) ->
     }.
 
 
-list_process_info(Properties0) ->
+rpc_handle_list_process_info(Properties0) ->
     L = erlang:processes(),
 
     Properties =

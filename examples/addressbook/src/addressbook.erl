@@ -3,7 +3,7 @@
 
 
 -include("addressbook_piqi.hrl").
--include("addressbook_piqi_impl.hrl").
+-behaviour(addressbook_piqi).
 
 
 -define(DB_FILE, "addressbook").
@@ -21,7 +21,7 @@ write_addressbook(Book) ->
 
 
 
-add_person(Person) ->
+rpc_handle_add_person(Person) ->
     io:format("add_person: ~p~n", [Person]),
 
     Book = read_addressbook(),
@@ -35,7 +35,7 @@ add_person(Person) ->
     end.
 
 
-get_person(Input) ->
+rpc_handle_get_person(Input) ->
     #get_person_input{ id = Id } = Input,
     io:format("get_person: ~p~n", [Id]),
 
@@ -49,7 +49,7 @@ get_person(Input) ->
     end.
 
 
-list_people(_) ->
+rpc_handle_list_people(_) ->
     Book = read_addressbook(),
     {ok, Book}.
 

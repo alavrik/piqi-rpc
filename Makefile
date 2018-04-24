@@ -3,15 +3,6 @@ REBAR ?= rebar
 
 all:
 	$(REBAR) compile
-	$(MAKE) -C piqic-erlang-rpc
-
-
-piqic-erlang-rpc: priv/bin/piqic-erlang-rpc
-
-
-# we need this so that stubs get rebuilt on compiler changes
-priv/bin/piqic-erlang-rpc: $(REBAR_DEPS_DIR)/piqi/priv/bin/piqic-erlang ebin/piqic_erlang_rpc.beam
-	touch $@
 
 
 deps:
@@ -34,12 +25,11 @@ dialyzer: all .dialyzer_deps_plt
 
 clean:
 	$(REBAR) clean
-	$(MAKE) -C piqic-erlang-rpc clean
 
 
 distclean: clean
 	rm -rf ebin deps .dialyzer_deps_plt
 
 
-.PHONY: deps piqic-erlang-rpc
+.PHONY: deps
 

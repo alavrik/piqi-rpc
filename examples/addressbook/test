@@ -8,7 +8,7 @@ export ERL_LIBS="deps"
 erl $PA -s piqi_rpc start \
 <<!
 piqi_rpc:start().
-piqi_rpc:add_service({addressbook, addressbook_piqi_rpc, "addressbook"}).
+piqi_rpc:add_service({addressbook, addressbook_piqi, "addressbook"}).
 io:format("~s~n", [os:cmd("./client.sh")]).
 timer:sleep(1000).  % wait for output flush
 erlang:halt().
