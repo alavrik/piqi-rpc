@@ -316,7 +316,7 @@ gen_spec(SpecAttribute, Context, F) ->
 
 gen_scoped_param_typename(Context, F, Param) ->
     ErlTypeName = gen_param_typename(Context, F, Param),
-    piqic:scoped_name(Context, ErlTypeName).
+    piqic:scoped_erlname(Context, ErlTypeName).
 
 
 gen_param_typename(Context, F, Param) ->
