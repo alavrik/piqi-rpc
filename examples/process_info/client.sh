@@ -5,7 +5,11 @@ set -x # -e
 
 if [ -z "$PIQI" ]
 then
-	PIQI=deps/piqi/priv/piqi-binary/"`uname -s`-`uname -m`"/piqi
+    PIQI="../../deps/piqi/priv/bin/piqi"
+    if [ ! -f "$PIQI" ]
+    then
+        PIQI="../../_build/default/lib/piqi/priv/bin/piqi"
+    fi
 fi
 
 

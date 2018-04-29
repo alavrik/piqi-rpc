@@ -9,7 +9,7 @@ deps:
 	$(REBAR) get-deps
 
 
-test:
+test: all
 	$(REBAR) eunit skip_deps=true
 
 
@@ -28,7 +28,7 @@ clean:
 
 
 distclean: clean
-	rm -rf ebin deps .dialyzer_deps_plt
+	rm -rf ebin deps _build rebar.lock .dialyzer_deps_plt
 
 
 .PHONY: deps

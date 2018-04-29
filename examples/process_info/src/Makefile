@@ -8,8 +8,16 @@ clean:
 
 
 PIQIC = $(REBAR_DEPS_DIR)/piqi/priv/bin/piqic-erlang
-
 PIQIC_FLAGS = #--trace
+
+
+# only needed for running tests inside the piqi-rpc project
+ifeq ($(wildcard $(PIQIC)),)
+PIQIC = ../../../deps/piqi/priv/bin/piqic-erlang
+endif
+ifeq ($(wildcard $(PIQIC)),)
+PIQIC = ../../../_build/default/lib/piqi/priv/bin/piqic-erlang
+endif
 
 
 PIQI_FILES =

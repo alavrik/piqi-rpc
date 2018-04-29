@@ -3,6 +3,10 @@
 /.eunit
 .rebar
 
+.rebar3
+rebar.lock
+_build
+
 # created by "make dialyzer"
 /.dialyzer_deps_plt
 

@@ -1,7 +1,8 @@
 REBAR ?= rebar
 
-# workaround for a rebar bug
-unexport ERL_LIBS
+
+# only needed for running tests inside the piqi-rpc project
+export ERL_LIBS = $(realpath ../../deps):$(realpath ../../_build/default/lib)
 
 
 all:
@@ -9,7 +10,6 @@ all:
 
 
 deps:
-	cd deps; for i in ../../../deps/*; do ln -sf $$i; done
 	$(REBAR) get-deps
 
 
@@ -27,9 +27,7 @@ clean:
 
 
 distclean: clean
-	#$(REBAR) delete-deps
-	cd deps; for i in ../../../deps/*; do rm -f `basename $$i`; done
-	rm -rf ebin #deps
+	rm -rf ebin _build rebar.lock
 
 
 .PHONY: test deps
